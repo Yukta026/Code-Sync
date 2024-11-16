@@ -45,14 +45,34 @@ const FormComponent = () => {
         return true
     }
 
-    const joinRoom = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        if (status === USER_STATUS.ATTEMPTING_JOIN) return
-        if (!validateForm()) return
-        toast.loading("Joining room...")
-        setStatus(USER_STATUS.ATTEMPTING_JOIN)
-        socket.emit(SocketEvent.JOIN_REQUEST, currentUser)
-    }
+    const joinRoom = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+      
+        if (status === USER_STATUS.ATTEMPTING_JOIN) return;
+        if (!validateForm()) return;
+      
+        toast.loading("Joining room...");
+        setStatus(USER_STATUS.ATTEMPTING_JOIN);
+      
+        // Save data to DynamoDB first (before emitting the socket event)
+        try {
+          await saveToDynamoDB(); // Save room data to DynamoDB
+          socket.emit(SocketEvent.JOIN_REQUEST, currentUser); // Emit the join request once data is saved
+        } catch (error) {
+          toast.error("Error saving room data to DynamoDB.");
+          console.error("Error saving to DynamoDB:", error);
+        }
+      };
+      
+
+    const saveToDynamoDB = async () => {
+        await fetch('https://6g18pf7h6b.execute-api.us-east-1.amazonaws.com/prod/saveToDynamo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: currentUser.roomId, username: currentUser.username }),
+        });
+      };
+      
 
     useEffect(() => {
         if (currentUser.roomId.length > 0) return

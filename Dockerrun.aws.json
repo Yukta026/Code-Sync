@@ -1,0 +1,29 @@
+{
+  "AWSEBDockerrunVersion": "2",
+  "containerDefinitions": [
+    {
+      "name": "client",
+      "image": "yuktagurnani137/code-sync-client",
+      "memory": 512,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5173,
+          "hostPort": 5173
+        }
+      ]
+    },
+    {
+      "name": "server",
+      "image": "yuktagurnani137/code-sync-server",
+      "memory": 512,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ]
+    }
+  ]
+}

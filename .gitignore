@@ -1,2 +1,5 @@
 start.bat
 TODO.md
+.DS_Store
+/client/node_modules/
+/server/node_modules/
